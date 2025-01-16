@@ -1,52 +1,110 @@
-// Define initial variables
-let score = 0; // Player's environmental score
+// Variables to track game state
+let Environment = 100;
+let Economy = 50;
+let Happiness = 75;
 
-// Create the HTML structure dynamically
-const gameContainer = document.createElement('div');
-gameContainer.style.textAlign = 'center';
-gameContainer.style.marginTop = '50px';
-document.body.appendChild(gameContainer);
+// Questions pool with multiple options
+const questions = [
+  {
+    message: "A large company wants to build a factory in a rural area.",
+    options: [
+      { text: "Approve the factory", effects: { Environment: -15, Economy: 10, Happiness: 5 } },
+      { text: "Deny the factory", effects: { Environment: 10, Economy: -5, Happiness: -10 } },
+      { 
+        text: "Negotiate stricter regulations", 
+        effects: null, // No immediate effect
+        dialogue: "The company agrees to stricter environmental rules. What regulations will you enforce?", 
+        followUpOptions: [
+          { text: "Limit emissions", effects: { Environment: 10, Economy: -5, Happiness: 5 } },
+          { text: "Demand renewable energy", effects: { Environment: 20, Economy: -10, Happiness: 10 } },
+          { text: "Ask for a community fund", effects: { Environment: 5, Economy: -5, Happiness: 15 } },
+        ],
+      },
+    ],
+  },
+  {
+    message: "You discover an endangered species in a forest targeted for logging.",
+    options: [
+      { text: "Protect the species", effects: { Environment: 50, Economy: -10, Happiness: 10 } },
+      { text: "Allow logging", effects: { Environment: -50, Economy: 10, Happiness: -10 } },
+      { text: "Seek a compromise", effects: { Environment: 10, Economy: 0, Happiness: 5 } },
+    ],
+  },
+];
 
-// Add a title
-const title = document.createElement('h1');
-title.innerText = 'Environmental Game';
-gameContainer.appendChild(title);
+// Get elements
+const messageBox = document.getElementById("message");
+const EnvironmentDisplay = document.getElementById("Environment");
+const EconomyDisplay = document.getElementById("Economy");
+const HappinessDisplay = document.getElementById("Happiness");
+const optionsContainer = document.getElementById("options-container");
 
-// Add a score display
-const scoreDisplay = document.createElement('h2');
-scoreDisplay.innerText = 'Score: ' + score;
-gameContainer.appendChild(scoreDisplay);
+// Show a question
+function showQuestion(question = null) {
+  const currentQuestion = question || questions[Math.floor(Math.random() * questions.length)];
+  messageBox.textContent = currentQuestion.message;
 
-// Add a button for a factory decision (negative impact)
-const factoryButton = document.createElement('button');
-factoryButton.innerText = 'Build Factory (-10)';
-factoryButton.style.margin = '10px';
-gameContainer.appendChild(factoryButton);
+  // Clear previous options
+  optionsContainer.innerHTML = "";
 
-// Add a button for planting a tree (positive impact)
-const treeButton = document.createElement('button');
-treeButton.innerText = 'Plant Tree (+20)';
-treeButton.style.margin = '10px';
-gameContainer.appendChild(treeButton);
-
-// Add event listeners to the buttons
-factoryButton.addEventListener('click', () => {
-  updateScore(-10); // Decrease score by 10
-});
-
-treeButton.addEventListener('click', () => {
-  updateScore(20); // Increase score by 20
-});
-
-// Function to update the score
-function updateScore(amount) {
-  score += amount; // Adjust score by the given amount
-
-  // Prevent score from going below 0
-  if (score < 0) {
-    score = 0;
-  }
-
-  // Update the score display
-  scoreDisplay.innerText = 'Score: ' + score;
+  // Add options as buttons
+  currentQuestion.options.forEach((option) => {
+    const button = document.createElement("button");
+    button.textContent = option.text;
+    button.onclick = () => {
+      if (option.effects) {
+        // Apply effects and show next random question
+        applyEffects(option.effects);
+        showQuestion();
+      } else if (option.dialogue) {
+        // Show follow-up dialogue and options
+        showFollowUp(option);
+      }
+    };
+    optionsContainer.appendChild(button);
+  });
 }
+
+// Show follow-up dialogue and options
+function showFollowUp(option) {
+  messageBox.textContent = option.dialogue;
+
+  // Clear previous options
+  optionsContainer.innerHTML = "";
+
+  // Add follow-up options as buttons
+  option.followUpOptions.forEach((followUp) => {
+    const button = document.createElement("button");
+    button.textContent = followUp.text;
+    button.onclick = () => {
+      applyEffects(followUp.effects);
+      showQuestion(); // Show the next random question
+    };
+    optionsContainer.appendChild(button);
+  });
+}
+
+// Apply effects of a choice
+function applyEffects(effects) {
+  Environment += effects.Environment || 0;
+  Economy += effects.Economy || 0;
+  Happiness += effects.Happiness || 0;
+
+  // Update the UI
+  EnvironmentDisplay.textContent = Environment;
+  EconomyDisplay.textContent = Economy;
+  HappinessDisplay.textContent = Happiness;
+
+  checkGameOver();
+}
+
+// Check for game over conditions
+function checkGameOver() {
+  if (Environment <= 0 || Economy <= 0 || Happiness <= 0) {
+    messageBox.textContent = "Game Over! Refresh to play again.";
+    optionsContainer.innerHTML = ""; // Clear options
+  }
+}
+
+// Start the game
+showQuestion();
