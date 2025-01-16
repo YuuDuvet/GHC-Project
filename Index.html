@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sort the Court - Environmental Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .game-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin: 30px auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .button-group {
+            margin: 20px 0;
+        }
+        .button-group button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        .result {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2e8b57;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Environmental Choices Game</h1>
+        <p>Decide how to manage resources and balance the environment with the needs of your community!</p>
+        
+        <!-- Game choices -->
+        <div class="button-group">
+            <button onclick="makeChoice('plantTree')">Plant a Tree</button>
+            <button onclick="makeChoice('buildFactory')">Build a Factory</button>
+            <button onclick="makeChoice('protectWildlife')">Protect Wildlife</button>
+            <button onclick="makeChoice('useRenewables')">Invest in Renewables</button>
+        </div>
+
+        <!-- Result Display -->
+        <div id="result" class="result">Your choice will impact the world...</div>
+    </div>
+
+    <script>
+        let environmentScore = 0;
+
+        function makeChoice(choice) {
+            if (choice === 'plantTree') {
+                environmentScore += 10;
+                displayResult('You planted a tree, improving the environment.');
+            } else if (choice === 'buildFactory') {
+                environmentScore -= 15;
+                displayResult('Factory built, increasing pollution.');
+            } else if (choice === 'protectWildlife') {
+                environmentScore += 8;
+                displayResult('Wildlife protected, a win for biodiversity.');
+            } else if (choice === 'useRenewables') {
+                environmentScore += 12;
+                displayResult('Invested in renewable energy, reducing carbon footprint.');
+            }
+        }
+
+        function displayResult(message) {
+            const resultElement = document.getElementById('result');
+            resultElement.innerHTML = message + ` Current score: ${environmentScore}`;
+        }
+    </script>
+</body>
+</html>
